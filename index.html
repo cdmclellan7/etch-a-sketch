@@ -5,7 +5,6 @@
         body, html {
             margin: 0;
             height: 100vh;
-            --cell-size: 10px;
         }
 
         #container {
@@ -13,19 +12,19 @@
         }
 
         #grid-container {
+            font-size: 0;
             margin: auto;
             padding: 0;
-            width: calc(16*var(--cell-size));
+            width: 500px;
+            height: 500px;
             line-height: 0;
             padding-bottom: 20px;
+            box-sizing: border-box;
         }
 
         .cell {
             box-sizing: border-box;
-            height: var(--cell-size);
-            width: var(--cell-size);
             display: inline-block;
-            border: 1px solid black;
             background-color: rgb(179, 231, 247);
         }
 
@@ -38,28 +37,41 @@
     <div id="container">
         <h1>Etch-a-Sketch</h1>
         <button id="reset">Reset</button>
-        <button id="size">Set Size of Grid</button>
+        <button id="size-button" type="submit">Set Size of Grid</button>
         <div id="grid-container"></div>
     </div>
 </body>
 <script>
-//make the grid of squares
+
 const container = document.querySelector('#grid-container');
-for (let i=0; i<256; i++) {
-    let cell = document.createElement('div');
-    cell.classList.add('cell');
-    container.appendChild(cell);
+let cells = document.querySelectorAll('.cell');
+createGrid(16);
+
+//make the grid of squares
+function createGrid(num) {
+    for (let i=0; i<(num*num); i++) {
+        let cell = document.createElement('div');
+        cell.classList.add('cell');
+        let dimension = 500/num;
+        cell.setAttribute('style', "height: "+dimension+"px; width: "+dimension+"px;");
+        cell.addEventListener('mouseenter', (e) => {
+            cell.classList.add('darker');
+        });
+        container.appendChild(cell);
+    }
+    cells = document.querySelectorAll('.cell');
+}
+
+function destroyGrid() {
+    cells.forEach((square) => {
+        square.remove();
+    });
 }
 
 //change color on mouseover
-const cells = document.querySelectorAll('.cell');
-cells.forEach((square) => {
-    square.addEventListener('mouseenter', (e) => {
-        square.classList.add('darker');
-    });
-});
 
-//reset button
+
+//reset color button
 const reset = document.querySelector('#reset');
 reset.onclick = () => {
     cells.forEach((square) => {
@@ -68,9 +80,14 @@ reset.onclick = () => {
 }
 
 //number of squares button
-const size = document.querySelector('#size');
-size.onclick = () => {
-    var number = prompt("How many squares do you want in the grid?");
+const sizeButton = document.querySelector('#size-button');
+sizeButton.onclick = () => {
+    let size = prompt("How many squares do you want for the grid?");
+    size = parseInt(size, 10);
+    if (size) {
+        destroyGrid();
+        createGrid(size);
+    }
 }
 
 
